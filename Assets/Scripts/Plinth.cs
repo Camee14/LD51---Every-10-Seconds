@@ -15,7 +15,11 @@ public class Plinth
 
     private InteractableRangeMono[] m_plinths;
     private InteractableRangeMono[] m_keys;
+    private AudioBank[] m_banks;
+    
     private Transform m_playerHold;
+
+    
     
     private float[] m_animOffsets;
 
@@ -32,6 +36,11 @@ public class Plinth
             bluePlinth.GetComponent<InteractableRangeMono>(), 
             yellowPlinth.GetComponent<InteractableRangeMono>(), 
             greenPlinth.GetComponent<InteractableRangeMono>()
+        };
+        m_banks = new [] {
+            bluePlinth.GetComponent<AudioBank>(), 
+            yellowPlinth.GetComponent<AudioBank>(), 
+            greenPlinth.GetComponent<AudioBank>()
         };
         m_keys = new[]
         {
@@ -55,6 +64,8 @@ public class Plinth
                 m_carriedKeyIndex = -1;
                 MoveKeyToPlinth(i);
                 m_keysPlaced++;
+                
+                m_banks[i].Play(0);
                 
                 m_plinths[i].StopInteractions();
                 m_keys[i].StopInteractions();

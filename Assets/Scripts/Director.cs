@@ -18,6 +18,8 @@ public class Director : MonoBehaviour
     public GameObject m_bluePlinth, m_yellowPlinth, m_greenPlinth;
     public GameObject m_blueKey, m_yellowKey, m_greenKey;
 
+    public GameObject m_ambientAudioObj;
+    
     public GameObject m_uiDeathScreen;
 
     public float m_fogMax, m_fogMin;
@@ -30,10 +32,13 @@ public class Director : MonoBehaviour
     public float m_duration = 10f;
 
     private AudioBank m_audioBank;
+    private AmbientAudioManager m_ambient;
     
     private Player m_player;
     private Idol m_idol;
     private Plinth m_plinthManager;
+
+    private Billboard[] m_billboards;
 
     private float m_timer;
     private bool m_thickFog;
@@ -46,6 +51,8 @@ public class Director : MonoBehaviour
     {
         m_player = new Player(m_playerObj);
         m_idol = new Idol(m_idolObj, this);
+
+        m_ambient = new AmbientAudioManager(m_ambientAudioObj);
 
         m_audioBank = GetComponent<AudioBank>();
         
@@ -61,6 +68,8 @@ public class Director : MonoBehaviour
         );
 
         RenderSettings.fogDensity = m_fogMin;
+
+        m_billboards = FindObjectsOfType<Billboard>();
     }
 
     // Update is called once per frame
@@ -68,13 +77,15 @@ public class Director : MonoBehaviour
     {
         if(m_gameState == GameState.LOST)
             return;
+
+        foreach (Billboard billboard in m_billboards)
+        {
+            billboard.FacePlayer(m_playerObj.transform.position);
+        }
         
         m_player.Look();
         m_player.Move(m_playerMoveSpeed);
         
-        if(m_gameState == GameState.WON)
-            return;
-
         m_timer += Time.deltaTime;
         if (m_timer >= m_duration)
         {
@@ -83,6 +94,10 @@ public class Director : MonoBehaviour
             
             m_timer = 0f;
         }
+        
+        if(m_gameState == GameState.WON)
+            return;
+        m_ambient.UpdateAmbientSounds(m_playerObj.transform.position);
 
         bool playerLookingAtIdol = m_player.LookingAtIdol((1f - RenderSettings.fogDensity) * m_fogDistanceModifier);
         

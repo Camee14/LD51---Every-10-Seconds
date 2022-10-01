@@ -44,7 +44,7 @@ public class Idol
         if(!canMove)
             return false;
 
-        if (math.distancesq(player.position, m_transform.position) < 2f)
+        if (math.distancesq(player.position, m_transform.position) < 4f)
         {
             m_agent.ResetPath();
             return true;

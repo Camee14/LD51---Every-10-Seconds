@@ -32,20 +32,6 @@ public class Player
         Vector3 moveDir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
         moveDir = m_transform.TransformDirection(moveDir) * movespeed;
-        
-        // int count = Physics.CapsuleCastNonAlloc(m_p1,m_p2, m_charController.radius, moveDir.normalized, m_moveHits, 5f, LayerMask.GetMask("Scenery"), QueryTriggerInteraction.Ignore);
-        // if (count > 0)
-        // {
-        //     foreach (RaycastHit hit in m_moveHits)
-        //     {
-        //         if(hit.transform.tag.Equals("Ground") || hit.transform.tag.Equals("Player"))
-        //             continue;
-        //         
-        //         if(math.lengthsq(moveDir) > hit.distance * hit.distance)
-        //             moveDir = Vector3.zero;
-        //     }
-        // }
-        
         m_charController.SimpleMove(moveDir);
     }
 
