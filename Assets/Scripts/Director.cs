@@ -18,19 +18,22 @@ public class Director : MonoBehaviour
     public GameObject m_bluePlinth, m_yellowPlinth, m_greenPlinth;
     public GameObject m_blueKey, m_yellowKey, m_greenKey;
 
+    public Transform m_idolDeathPos;
+
     public GameObject m_ambientAudioObj;
     
-    public GameObject m_uiDeathScreen;
+    public DeathScreenUI m_uiDeathScreen;
+    public WinScreenUI m_uiWinScreen;
 
     public float m_fogMax, m_fogMin;
     public float m_fogSpeed;
     public float m_fogDistanceModifier = 20f;
 
     public float m_playerMoveSpeed;
-
-    public bool m_turnOffChasing;
+    
     public float m_duration = 10f;
 
+    public AudioSource m_CamAudioSrc;
     private AudioBank m_audioBank;
     private AmbientAudioManager m_ambient;
     
@@ -49,8 +52,10 @@ public class Director : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.visible = false;
+        
         m_player = new Player(m_playerObj);
-        m_idol = new Idol(m_idolObj, this);
+        m_idol = new Idol(m_idolObj);
 
         m_ambient = new AmbientAudioManager(m_ambientAudioObj);
 
@@ -80,7 +85,7 @@ public class Director : MonoBehaviour
 
         foreach (Billboard billboard in m_billboards)
         {
-            billboard.FacePlayer(m_playerObj.transform.position);
+            billboard.FacePlayerCamera();
         }
         
         m_player.Look();
@@ -101,7 +106,7 @@ public class Director : MonoBehaviour
 
         bool playerLookingAtIdol = m_player.LookingAtIdol((1f - RenderSettings.fogDensity) * m_fogDistanceModifier);
         
-        bool caught = m_idol.Move(m_playerObj.transform, !m_turnOffChasing && m_thickFog, playerLookingAtIdol);
+        bool caught = m_idol.Move(m_playerObj.transform, m_thickFog, playerLookingAtIdol);
         if (caught)
         {
             m_gameState = GameState.LOST;
@@ -117,13 +122,16 @@ public class Director : MonoBehaviour
             {
                 //win the game
                 m_gameState = GameState.WON;
-                m_idol.StartWinCeremony();
+                m_uiWinScreen.StartReveal();
+                m_idol.StartWinCeremony(m_idolDeathPos.position);
             }
             else
             {
                 //do ceremony
                 m_idol.StartKeyCeremony();
             }
+
+            m_idol.IncreaseThreat(m_plinthManager.KeysPlaced);
 
             m_lastKeysPlacedCount = m_plinthManager.KeysPlaced;
         }
@@ -133,8 +141,8 @@ public class Director : MonoBehaviour
 
     private void DoDeathCeremony()
     {
-        m_uiDeathScreen.SetActive(true);
-        m_audioBank.Play(0);
+        m_uiDeathScreen.StartReveal();
+        m_CamAudioSrc.PlayOneShot(m_audioBank.Clips[0]);
     }
 
     IEnumerator TransitionFog()

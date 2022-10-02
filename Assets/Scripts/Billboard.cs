@@ -1,12 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    
-    public void FacePlayer(Vector3 playerPos)
+    public bool m_yOnly;
+    private Transform m_cam;
+
+    private void Start()
     {
-        transform.forward = (playerPos - transform.position).normalized;
+        m_cam = Camera.main.transform;
+    }
+
+    public void FacePlayerCamera()
+    {
+        Vector3 camPos = m_cam.position;
+        
+        if (m_yOnly)
+        {
+            camPos.y = transform.position.y;
+        }
+        
+        transform.forward = -(camPos - transform.position).normalized;
     }
 }

@@ -24,7 +24,7 @@ Shader "Custom/Sprites/Diffuse"
             "CanUseSpriteAtlas"="True"
         }
 
-        Cull Front
+        Cull Back
         Lighting Off
         ZWrite Off
         Blend One OneMinusSrcAlpha
